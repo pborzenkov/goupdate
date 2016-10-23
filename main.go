@@ -147,7 +147,7 @@ func main() {
 	}
 
 	for _, f := range flag.Args() {
-		err := processBinary(f, true)
+		err := processBinary(f, false)
 		if err != nil && !*verbose {
 			fmt.Printf("Failed to process '%s': %v\n", f, err)
 		}

@@ -104,8 +104,8 @@ func processBinary(file string, ask bool) error {
 }
 
 func updateBinary(binary string) error {
-	if err := exec.Command("go", "get", "-v", binary).Run(); err != nil {
-		return fmt.Errorf("go get -v %s failed\n%v\n", binary, err)
+	if err := exec.Command("go", "get", "-u", binary).Run(); err != nil {
+		return fmt.Errorf("go get -u %s failed\n%v\n", binary, err)
 	}
 	if err := exec.Command("go", "install", binary).Run(); err != nil {
 		return fmt.Errorf("go isntall %s failed\n%v\n", binary, err)

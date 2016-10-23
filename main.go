@@ -24,6 +24,7 @@ var (
 	goPathBin string
 
 	errNotAGoBinary = fmt.Errorf("not a Go built binary")
+	errSkipped      = fmt.Errorf("skipped")
 
 	verbose = flag.Bool("verbose", false, "Print debug messages")
 	force   = flag.Bool("force", false, "Don't ask for confirmation")
@@ -91,7 +92,7 @@ func processBinary(file string, ask bool) error {
 			}
 			if answer == "n" || answer == "no" {
 				debug("SKIP\n")
-				return nil
+				return errSkipped
 			}
 		}
 	}
@@ -129,7 +130,7 @@ func processAllBinaries() {
 
 		err = processBinary(path, !*force)
 		if err != nil {
-			if err != errNotAGoBinary {
+			if err != errNotAGoBinary && err != errSkipped {
 				fmt.Printf("Failed to process '%s': %v\n", path, err)
 			}
 		} else {

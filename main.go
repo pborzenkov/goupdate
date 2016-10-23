@@ -25,6 +25,7 @@ var (
 	errNotAGoBinary = fmt.Errorf("not a Go built binary")
 
 	verbose = flag.Bool("verbose", false, "Print debug messages")
+	force   = flag.Bool("force", false, "Don't ask for confirmation")
 )
 
 func init() {
@@ -113,6 +114,21 @@ func updateBinary(binary string) error {
 }
 
 func processAllBinaries() {
+	filepath.Walk(goPathBin, func(path string, info os.FileInfo, err error) error {
+		if info.Mode()&os.ModeType != 0 {
+			return nil
+		}
+
+		err = processBinary(path, !*force)
+		if err != nil {
+			if err != errNotAGoBinary {
+				fmt.Printf("Failed to process '%s': %v\n", path, err)
+			}
+		} else {
+			fmt.Printf("Updated '%s'\n", path)
+		}
+		return nil
+	})
 }
 
 func main() {

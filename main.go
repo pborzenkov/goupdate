@@ -115,11 +115,6 @@ func updateBinary(binary string) error {
 		return fmt.Errorf("go get -u %s failed\n%v\n%s\n", binary, err, stderr.String())
 	}
 
-	cmd = exec.Command("go", "install", binary)
-	cmd.Stderr = &stderr
-	if err := cmd.Run(); err != nil {
-		return fmt.Errorf("go install %s failed\n%v\n%s\n", binary, err, stderr.String())
-	}
 	return nil
 }
 

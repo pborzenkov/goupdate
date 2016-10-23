@@ -31,13 +31,14 @@ var (
 )
 
 func init() {
-	goPath, ok := os.LookupEnv("GOPATH")
-	if !ok {
+	goPaths := filepath.SplitList(os.Getenv("GOPATH"))
+	if len(goPaths) == 0 {
 		fmt.Fprintf(os.Stderr, "error: GOPATH is not set\n")
 		os.Exit(1)
 	}
-	goPathSrc = filepath.Join(goPath, "src")
-	goPathBin = filepath.Join(goPath, "bin")
+
+	goPathSrc = filepath.Join(goPaths[0], "src")
+	goPathBin = filepath.Join(goPaths[0], "bin")
 }
 
 func debug(format string, a ...interface{}) {
@@ -124,7 +125,7 @@ func updateBinary(binary string) error {
 
 func processAllBinaries() {
 	filepath.Walk(goPathBin, func(path string, info os.FileInfo, err error) error {
-		if info.Mode()&os.ModeType != 0 {
+		if err != nil || info.Mode()&os.ModeType != 0 {
 			return nil
 		}
 

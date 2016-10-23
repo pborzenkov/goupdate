@@ -2,6 +2,7 @@ package main
 
 import (
 	"bufio"
+	"bytes"
 	"flag"
 	"fmt"
 	"os"
@@ -98,17 +99,24 @@ func processBinary(file string, ask bool) error {
 	err = updateBinary(filepath.Dir(srcFile[len(goPathSrc)+1:]))
 	if err != nil {
 		debug("FAIL, %v\n", err)
+		return err
 	}
 	debug("OK\n")
 	return nil
 }
 
 func updateBinary(binary string) error {
-	if err := exec.Command("go", "get", "-u", binary).Run(); err != nil {
-		return fmt.Errorf("go get -u %s failed\n%v\n", binary, err)
+	var stderr bytes.Buffer
+	cmd := exec.Command("go", "get", "-u", binary)
+	cmd.Stderr = &stderr
+	if err := cmd.Run(); err != nil {
+		return fmt.Errorf("go get -u %s failed\n%v\n%s\n", binary, err, stderr.String())
 	}
-	if err := exec.Command("go", "install", binary).Run(); err != nil {
-		return fmt.Errorf("go isntall %s failed\n%v\n", binary, err)
+
+	cmd = exec.Command("go", "install", binary)
+	cmd.Stderr = &stderr
+	if err := cmd.Run(); err != nil {
+		return fmt.Errorf("go install %s failed\n%v\n%s\n", binary, err, stderr.String())
 	}
 	return nil
 }
